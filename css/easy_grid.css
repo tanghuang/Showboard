@@ -1,0 +1,76 @@
+/*
+
+   Easy Grid CSS
+   data generate a table.
+
+   */
+/***************************************************************************
+	Sorting asc/desc arrow CSS
+***************************************************************************/
+
+.asc_arrow {
+	width: 0; 
+	height: 0; 
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	border-bottom: 7px solid black;
+}
+
+.desc_arrow {
+	width: 0; 
+	height: 0; 
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	border-top: 7px solid black;
+}
+
+.selected {
+	border-top: 7px solid black;
+}
+
+/***************************************************************************
+	Easy Grid CSS
+***************************************************************************/
+.easy_grid_style {
+	margin:0px;padding:0px;
+	width:100%;
+	border:1px solid #4f81bd;
+}
+.easy_grid_style table {
+	width:100%;
+	margin:0px;padding:0px;
+}
+.easy_grid_style tr:nth-child(odd) { background-color:#E9EDF4; }
+.easy_grid_style tr:nth-child(even)    { background-color:#ffffff; }
+.easy_grid_style td {
+	vertical-align:middle;
+	border:1px solid #4f81bd;
+	border-width:0px 1px 1px 0px;
+	text-align:right;
+	padding:3px;
+	font-size:12px;
+	font-family:Arial;
+	font-weight:normal;
+	color:#000000;
+}
+.easy_grid_style tr:last-child td {
+	border-width:0px 1px 0px 0px;
+}
+.easy_grid_style tr td:last-child {
+	border-width:0px 0px 1px 0px;
+}
+.easy_grid_style tr:last-child td:last-child {
+	border-width:0px 0px 0px 0px;
+}
+
+.easy_grid_style tr:first-child td {
+	background-color:#4F81BD;
+	border:0px solid #000000;
+	text-align:center;
+	border-width:0px 0px 1px 1px;
+	font-size:14px;
+	font-family:Arial;
+	font-weight:bold;
+	color:#ffffff;
+}
+

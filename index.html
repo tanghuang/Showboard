@@ -1,0 +1,170 @@
+<html>
+	<head>
+	<meta charset="gbk">
+	<title>用户兴趣统计</title>
+	<link href="css/easy_grid.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="css/smoothness/jquery-ui-1.9.0.custom.css">
+	<link rel="stylesheet" href="css/datePicker.css">
+	<script src="jss/jquery-1.8.2.min.js"></script>
+	<script src="jss/jquery-ui-1.9.0.custom.min.js"></script>
+	<script src="jss/jquery.ui.datepicker-zh-CN.js"></script>
+	<script>
+		var jq = $.noConflict();
+	</script>
+	<script src="jss/easy_grid.js"></script>
+	<style>
+		.ui-combobox {
+			position: relative;
+			display: inline-block;
+			font-size:11px;
+		}
+		.ui-combobox-toggle {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			margin-left: -1px;
+			padding: 0;
+			/* adjust styles for IE 6/7 */
+			*height: 1.7em;
+			*top: 0.1em;
+		}
+		.ui-combobox-input {
+			margin: 0;
+			padding: 0.3em;
+		}
+		/* this original for Autocomplete Combobox */
+		.ui-button { margin-left: -1px; }
+		.ui-button-icon-only .ui-button-text { padding: 0.35em; } 
+		.ui-autocomplete-input { margin: 0; padding: 0.48em 0 0.47em 0.45em; }
+
+		/* *** Add this for visible Scrolling ;) */
+		.ui-autocomplete {
+			max-height: 400px;
+			max-width:160px;
+			font-size:11px;
+			overflow-y: auto;
+			/* prevent horizontal scrollbar */
+			overflow-x: hidden;
+			/* add padding to account for vertical scrollbar */
+			padding-right: 20px;
+		}
+		/* IE 6 doesn't support max-height
+		 * we use height instead, but this forces the menu to always be this tall
+		 */
+		html .ui-autocomplete {
+			height: 200px;
+		}
+
+		/* manually rewrite the default style in jquery-ui theme css */
+		.ui-datepicker {
+			width: 12em;
+			font-size:1em;
+		}
+
+		.hide_div { display:none }
+		.show_div { display:inline }
+	</style>
+	<script src="jss/jquery.combobox.js"></script>
+	<script>
+	jq(function(){
+		var today = new Date();
+		another = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+		var date2str = function(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+		jq('#date').val(date2str(another)).datepicker();
+	});
+	</script>
+	</head>
+
+	<body>
+	<h3 align="center">用户兴趣覆盖率统计</h3>
+	<hr />
+<div id="filter">
+	<table>
+	<tr>
+	<td> 选择时间：</td><td><input type="text" id="date" name="date" /></td>
+	<td>用户兴趣类目:</td><td><input type="text" name="query" id="query" /> </td>
+	</tr>
+	<td>页码：</td><td><input type="text" id="page" name="page" value="1" /></td>
+	</table>
+</div>
+	<button id="go" name="go">查询</button>&nbsp;
+	<span id="paging_buttons" class="hide_div"><button id="prev_page">上一页</button>&nbsp;<button id="next_page">下一页</button></span>&nbsp;&nbsp;
+	<a href="#" target="_blank" id="download">下载数据</a>
+	<div id="help" class="hide_div" style="font-size:12px">
+	<p>
+	</p>
+	</div>
+	<script>
+		//jq('#gethelp').click(function(){ jq('#help').toggle(); });
+	</script>
+	<div id="table_holder" style="width:100%" >
+	</div>
+	<script>
+var mygrid = easy_grid({
+	"holder":jq('#table_holder'),
+	"name":"mygrid"
+});
+
+function isNumber(o) {
+	return !isNaN(o - 0);
+}
+
+var getFilterOptions = function() {
+	var msg = {};
+	msg.date = jq('#date').val();
+	msg.query = jq('#query').val();
+	msg.page = (!isNumber(jq('#page').val()) || jq('#page').val() < 1) ? 1 : Math.ceil(jq('#page').val());
+	msg.page_size = 20;
+	return msg;
+};
+
+// --------------------------------------
+// go button
+jq('#go').click(function() {
+	jq('#paging_buttons').removeClass('hide_div').addClass('show_div');
+	var msg = getFilterOptions();
+
+	jq.ajax({
+		data:msg,
+		url:'interest_stat.php',
+		type:'post',
+		dataType:'json',
+		error:function(jqXHR,text,err){
+			alert('failed to send:' + text);
+		},
+		success:function(data,text,jqxhr){
+			mygrid.cleanView().bindData(data).show(1);
+		}
+	});
+});
+
+jq('#prev_page').click(function(){
+	var page = parseInt(jq('#page').val());
+	if (page > 1) // min page num is 1
+		jq('#page').val(page - 1);
+	jq('#go').trigger('click');
+});
+jq('#next_page').click(function(){
+	var page = parseInt(jq('#page').val());
+	jq('#page').val(page + 1);
+	jq('#go').trigger('click');
+});
+
+// --------------------------------------
+// export and save data
+var changeDownloadUrl = function() {
+	var msg = getFilterOptions();
+
+	var url = 'interest_stat.php?download=download';
+	for (var key in msg) {
+		url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(msg[key]);
+	}
+	jq('#download').attr('href', url);
+};
+
+jq('#filter').change(changeDownloadUrl);
+changeDownloadUrl();
+
+	</script>
+	</body>
+</html>
